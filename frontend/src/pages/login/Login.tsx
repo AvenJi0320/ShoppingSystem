@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Toast } from '@douyinfe/semi-ui';
+import { Form, Button, Toast } from '@douyinfe/semi-ui';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const Login = () => {
   return (
     <div>
       <h1>登录</h1>
-      <Form onSubmit={handleSubmit} initValues={{ identifier: '', password: '' }}>
+      <Form onSubmit={handleSubmit}>
         <Form.Input
           field="identifier"
           label="手机号或邮箱"
