@@ -1,47 +1,19 @@
 import { Elysia } from 'elysia';
-import prisma from './db/client.js';
+import { cors } from '@elysiajs/cors';
+import { authRoutes } from './routes/auth.js';
+import { userRoutes } from './routes/users.js';
+import { productRoutes } from './routes/products.js';
 
 const app = new Elysia()
-  .get('/api/users', async () => {
-    try {
-      const users = await prisma.sysUser.findMany();
-      
-      return {
-        message: 'All users from sys_user table',
-        data: users,
-        metadata: {
-          totalCount: users.length,
-          timestamp: new Date().toISOString()
-        }
-      };
-    } catch (error) {
-      return {
-        message: 'Database error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      };
-    }
-  })
-  .get('/api/products', async () => {
-    try {
-      const products = await prisma.product.findMany();
-      
-      return {
-        message: 'All products from product table',
-        data: products,
-        metadata: {
-          totalCount: products.length,
-          timestamp: new Date().toISOString()
-        }
-      };
-    } catch (error) {
-      return {
-        message: 'Database error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      };
-    }
-  })
+  .use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  }))
+  .use(authRoutes)
+  .use(userRoutes)
+  .use(productRoutes)
   .listen(3000);
 
 console.log(`🚀 Server running at http://localhost:3000`);

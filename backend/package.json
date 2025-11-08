@@ -8,6 +8,7 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.4.0",
     "@prisma/client": "^6.19.0",
     "dotenv": "^17.2.3",
     "elysia": "^1.0.0",
