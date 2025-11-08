@@ -6,15 +6,15 @@
 
 ```
 shopping-system/
-├── frontend/          # React前端应用
+├── frontend/         # React前端应用
 │   ├── src/          # 源代码
 │   ├── public/       # 静态资源
 │   └── package.json  # 前端依赖
-├── backend/           # Elysia后端API
+├── backend/          # Elysia后端API
 │   ├── src/          # 源代码
 │   └── package.json  # 后端依赖
-├── package.json       # 根工作区配置
-└── tsconfig.json      # TypeScript配置
+├── package.json      # 根工作区配置
+└── tsconfig.json     # TypeScript配置
 ```
 
 ## 快速开始
