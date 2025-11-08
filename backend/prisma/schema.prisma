@@ -40,3 +40,16 @@ model Product {
 
   @@map("product")
 }
+
+model Order {
+  order_id     BigInt   @id @default(autoincrement())
+  user_id      Int
+  total_amount Float
+  order_status Int      @default(0) // 0-待收货, 1-已完成, 2-已取消
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  
+  user         SysUser  @relation(fields: [user_id], references: [user_id])
+
+  @@map("orde")
+}
