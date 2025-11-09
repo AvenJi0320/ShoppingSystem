@@ -2,6 +2,7 @@ import Test from "./pages/test/Test.tsx";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Shop from "./pages/shop/Shop.tsx";
 import Login from "./pages/login/Login.tsx";
+import FinishCart from "./pages/cart/FinishCart.tsx";
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
                 <Route path='/test' element={<Test />} />
                 <Route path='/shop' element={<Shop />} />
                 <Route path='/login' element={<Login />} />
+                <Route path='/finish_order' element={<FinishCart />} />
             </Routes>
         </Router>
     )

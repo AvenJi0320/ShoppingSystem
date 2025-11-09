@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Button, Spin, Empty } from '@douyinfe/semi-ui';
 import { ProductCard, CartModal } from './components';
-import type {Product, CartItem} from './types';
+import type {Product} from './types';
+import { useCartStore } from '../../store/cartStore';
 
 const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [cartVisible, setCartVisible] = useState(false);
+
+  const { cart, addToCart, removeFromCart } = useCartStore();
 
   // 获取商品列表
   useEffect(() => {
@@ -31,31 +33,12 @@ const Shop = () => {
 
   // 添加商品到购物车
   const handleAddToCart = (product: Product) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.product_id === product.product_id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.product_id === product.product_id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [
-          ...prevCart,
-          {
-            product_id: product.product_id,
-            product_name: product.product_name,
-            price: product.price,
-            quantity: 1,
-          },
-        ];
-      }
-    });
+    addToCart(product);
   };
 
   // 移除购物车商品
   const handleRemoveFromCart = (productId: number) => {
-    setCart((prevCart) => prevCart.filter((item) => item.product_id !== productId));
+    removeFromCart(productId);
   };
 
   return (

@@ -1,4 +1,5 @@
 import { Modal, Button, Space, Empty } from '@douyinfe/semi-ui';
+import { useNavigate } from 'react-router-dom';
 import type {CartItem} from '../types';
 
 interface CartModalProps {
@@ -9,10 +10,19 @@ interface CartModalProps {
 }
 
 const CartModal = ({ visible, cart, onCancel, onRemove }: CartModalProps) => {
+  const navigate = useNavigate();
+
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const handleCheckout = () => {
+    if (cart.length > 0) {
+      onCancel();
+      navigate('/finish_order');
+    }
+  };
 
   return (
     <Modal
@@ -58,7 +68,7 @@ const CartModal = ({ visible, cart, onCancel, onRemove }: CartModalProps) => {
               </span>
             </div>
           </div>
-          <Button block type="primary" size="large">
+          <Button block type="primary" size="large" onClick={handleCheckout}>
             去结算
           </Button>
         </Space>
