@@ -3,6 +3,7 @@ import { cors } from '@elysiajs/cors';
 import { authRoutes } from './routes/auth.js';
 import { userRoutes } from './routes/users.js';
 import { productRoutes } from './routes/products.js';
+import { orderRoutes } from './routes/orders.js';
 
 const app = new Elysia()
   .use(cors({
@@ -14,6 +15,7 @@ const app = new Elysia()
   .use(authRoutes)
   .use(userRoutes)
   .use(productRoutes)
+  .use(orderRoutes)
   .listen(3000);
 
 console.log(`🚀 Server running at http://localhost:3000`);

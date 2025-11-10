@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@douyinfe/semi-icons": "^2.87.1",
     "@douyinfe/semi-ui": "^2.87.1",
     "@tailwindcss/vite": "^4.1.17",
     "react": "^18.2.0",

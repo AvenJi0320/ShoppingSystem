@@ -80,6 +80,8 @@ cd frontend && bun run dev
 
 ### 数据库初始化
 ```bash
+# 需要手动分步执行
+
 # 生成Prisma客户端
 cd backend && bunx prisma generate
 

@@ -1,30 +1,32 @@
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Toast } from '@douyinfe/semi-ui';
+import { useUserStore } from '../../store/userStore';
 
 const Login = () => {
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
 
   const handleSubmit = async (values: any) => {
     const { identifier, password } = values;
-    
+
     const trimmedIdentifier = identifier.trim();
     const trimmedPassword = password.trim();
-    
+
     // 基础验证
     if (!trimmedIdentifier || !trimmedPassword) {
       Toast.error('请输入手机号/邮箱和密码');
       return;
     }
-    
+
     // 格式验证
     const isPhone = /^\d{11}$/.test(trimmedIdentifier);
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedIdentifier);
-    
+
     if (!isPhone && !isEmail) {
       Toast.error('请输入有效的手机号或邮箱地址');
       return;
     }
-    
+
     try {
       const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -44,6 +46,8 @@ const Login = () => {
       const result = await response.json();
 
       if (result.success) {
+        // 保存用户信息到store
+        setUser(result.data.user_id, result.data.phone, result.data.email);
         Toast.success('登录成功');
         navigate('/shop');
       } else {
