@@ -1,0 +1,31 @@
+diff a/backend/prisma/schema.prisma b/backend/prisma/schema.prisma	(rejected hunks)
+@@ -24,6 +24,8 @@ model SysUser {
+   updated_at      DateTime @updatedAt
+ 
+   @@map("sys_user")
++  Order Order[]
++  ProductComment ProductComment[]
+ }
+ 
+ model Product {
+@@ -51,5 +54,19 @@ model Order {
+   
+   user         SysUser  @relation(fields: [user_id], references: [user_id])
+ 
+-  @@map("orde")
++  @@map("order")
++}
++
++model ProductComment {
++  comment_id   Int      @id @default(autoincrement())
++  user_id      Int
++  product_id   Int
++  score        Int      // 评分：1-5分
++  content      String?
++  create_time  DateTime @default(now())
++  
++  user         SysUser  @relation(fields: [user_id], references: [user_id])
++  product      Product  @relation(fields: [product_id], references: [product_id])
++
++  @@map("product_comment")
+ }

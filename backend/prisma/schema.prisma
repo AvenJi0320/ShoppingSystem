@@ -40,6 +40,7 @@ model Product {
   updated_at    DateTime @updatedAt
 
   @@map("product")
+  ProductComment ProductComment[]
 }
 
 model Order {
