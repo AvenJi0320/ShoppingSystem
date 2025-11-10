@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Shop from "./pages/shop/Shop.tsx";
 import Login from "./pages/login/Login.tsx";
 import FinishCart from "./pages/cart/FinishCart.tsx";
+import Order from "./pages/order/Order.tsx";
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                 <Route path='/shop' element={<Shop />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/finish_order' element={<FinishCart />} />
+                <Route path='/order' element={<Order />} />
             </Routes>
         </Router>
     )

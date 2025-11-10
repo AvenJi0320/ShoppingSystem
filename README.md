@@ -83,8 +83,11 @@ cd frontend && bun run dev
 # 生成Prisma客户端
 cd backend && bunx prisma generate
 
+# 迁移数据库 
+bunx prisma migrate dev --name init
+
 # 运行种子数据
-cd backend && bun run src/db/seed.ts
+bun run src/db/seed.ts
 ```
 
 ## 开发说明

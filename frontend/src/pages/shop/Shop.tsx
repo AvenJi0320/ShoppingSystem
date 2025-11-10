@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, Spin, Empty } from '@douyinfe/semi-ui';
-import { ProductCard, CartModal } from './components';
+import { ProductCard, CartModal, TopNavBar } from './components';
 import type {Product} from './types';
 import { useCartStore } from '../../store/cartStore';
 
@@ -42,9 +42,12 @@ const Shop = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 p-5">
-      {/* 顶部导航栏 */}
-      <div className="flex justify-between items-center mb-8 bg-white p-5 rounded-lg shadow-sm">
+    <div className="w-full min-h-screen bg-gray-100">
+      {/* 顶部主导航栏 */}
+      <TopNavBar />
+
+      {/* 商品列表导航栏 */}
+      <div className="flex justify-between items-center mb-8 bg-white p-5 rounded-lg shadow-sm m-5">
         <h1 className="text-3xl font-bold text-gray-900 m-0">商品列表</h1>
         <Button
           type="primary"

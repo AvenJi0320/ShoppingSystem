@@ -96,6 +96,62 @@ async function main() {
   });
 
   console.log('创建的商品数据:', { product1, product2, product3, product4 });
+
+  // 清空现有订单数据
+  await prisma.order.deleteMany();
+
+  // 创建测试订单数据
+  const order1 = await prisma.order.create({
+    data: {
+      order_id: 1,
+      user_id: user1.user_id,
+      total_amount: 8898.00,
+      product_list: `${product1.product_id},${product3.product_id}`,
+      order_status: 1, // 已完成
+    },
+  });
+
+  const order2 = await prisma.order.create({
+    data: {
+      order_id: 2,
+      user_id: user2.user_id,
+      total_amount: 9898.00,
+      product_list: `${product2.product_id},${product3.product_id}`,
+      order_status: 0, // 待收货
+    },
+  });
+
+  const order3 = await prisma.order.create({
+    data: {
+      order_id: 3,
+      user_id: user1.user_id,
+      total_amount: 2399.00,
+      product_list: `${product4.product_id}`,
+      order_status: 2, // 已取消
+    },
+  });
+
+  const order4 = await prisma.order.create({
+    data: {
+      order_id: 4,
+      user_id: user3.user_id,
+      total_amount: 17897.00,
+      product_list: `${product1.product_id},${product2.product_id}`,
+      order_status: 1, // 已完成
+    },
+  });
+
+  const order5 = await prisma.order.create({
+    data: {
+      order_id: 5,
+      user_id: user4.user_id,
+      total_amount: 899.00,
+      product_list: `${product3.product_id}`,
+      order_status: 1, // 已完成
+    },
+  });
+
+  console.log('创建的订单数据:', { order1, order2, order3, order4, order5 });
 }
 
 main()
