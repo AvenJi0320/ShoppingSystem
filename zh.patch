@@ -1,0 +1,132 @@
+diff --git a/frontend/src/pages/shop/Shop.tsx b/frontend/src/pages/shop/Shop.tsx
+index 53a8cf5..2e7ec28 100644
+--- a/frontend/src/pages/shop/Shop.tsx
++++ b/frontend/src/pages/shop/Shop.tsx
+@@ -9,7 +9,7 @@ const Shop = () => {
+   const [loading, setLoading] = useState(true);
+   const [cartVisible, setCartVisible] = useState(false);
+ 
+-  const { cart, addToCart, removeFromCart } = useCartStore();
++  const { cart, addToCart, removeFromCart, updateQuantity } = useCartStore();
+ 
+   // 获取商品列表
+   useEffect(() => {
+@@ -41,6 +41,11 @@ const Shop = () => {
+     removeFromCart(productId);
+   };
+ 
++  // 更新购物车商品数量
++  const handleUpdateQuantity = (productId: number, quantity: number) => {
++    updateQuantity(productId, quantity);
++  };
++
+   return (
+     <div className="w-full min-h-screen bg-gray-100">
+       {/* 顶部主导航栏 */}
+@@ -84,6 +89,7 @@ const Shop = () => {
+         cart={cart}
+         onCancel={() => setCartVisible(false)}
+         onRemove={handleRemoveFromCart}
++        onUpdateQuantity={handleUpdateQuantity}
+       />
+     </div>
+   );
+diff --git a/frontend/src/pages/shop/components/CartModal.tsx b/frontend/src/pages/shop/components/CartModal.tsx
+index 94ef1e6..b92d891 100644
+--- a/frontend/src/pages/shop/components/CartModal.tsx
++++ b/frontend/src/pages/shop/components/CartModal.tsx
+@@ -1,4 +1,4 @@
+-import { Modal, Button, Space, Empty } from '@douyinfe/semi-ui';
++import { Modal, Button, Space, Empty, InputNumber } from '@douyinfe/semi-ui';
+ import { useNavigate } from 'react-router-dom';
+ import type {CartItem} from '../types';
+ 
+@@ -7,9 +7,10 @@ interface CartModalProps {
+   cart: CartItem[];
+   onCancel: () => void;
+   onRemove: (productId: number) => void;
++  onUpdateQuantity: (productId: number, quantity: number) => void;
+ }
+ 
+-const CartModal = ({ visible, cart, onCancel, onRemove }: CartModalProps) => {
++const CartModal = ({ visible, cart, onCancel, onRemove, onUpdateQuantity }: CartModalProps) => {
+   const navigate = useNavigate();
+ 
+   const totalPrice = cart.reduce(
+@@ -47,16 +48,30 @@ const CartModal = ({ visible, cart, onCancel, onRemove }: CartModalProps) => {
+                     {item.product_name}
+                   </p>
+                   <p className="text-xs text-red-600 font-semibold m-0">
+-                    ¥{item.price} × {item.quantity}
++                    ¥{item.price}
+                   </p>
+                 </div>
+-                <Button
+-                  type="danger"
+-                  size="small"
+-                  onClick={() => onRemove(item.product_id)}
+-                >
+-                  移除
+-                </Button>
++                <div className="flex items-center gap-2">
++                  <InputNumber
++                    value={item.quantity}
++                    min={1}
++                    max={999}
++                    step={1}
++                    size="small"
++                    className="w-24"
++                    onChange={(value) => {
++                      const newQuantity = typeof value === 'number' ? value : 1;
++                      onUpdateQuantity(item.product_id, newQuantity);
++                    }}
++                  />
++                  <Button
++                    type="danger"
++                    size="small"
++                    onClick={() => onRemove(item.product_id)}
++                  >
++                    移除
++                  </Button>
++                </div>
+               </div>
+             ))}
+           </div>
+diff --git a/frontend/src/store/cartStore.ts b/frontend/src/store/cartStore.ts
+index 0a7d6ed..9c54b38 100644
+--- a/frontend/src/store/cartStore.ts
++++ b/frontend/src/store/cartStore.ts
+@@ -5,6 +5,7 @@ interface CartStore {
+   cart: CartItem[];
+   addToCart: (product: any) => void;
+   removeFromCart: (productId: number) => void;
++  updateQuantity: (productId: number, quantity: number) => void;
+   clearCart: () => void;
+   getTotal: () => number;
+ }
+@@ -45,6 +46,25 @@ export const useCartStore = create<CartStore>((set, get) => ({
+     }));
+   },
+ 
++  updateQuantity: (productId, quantity) => {
++    set((state) => {
++      // 如果数量小于等于0，则移除该商品
++      if (quantity <= 0) {
++        return {
++          cart: state.cart.filter((item) => item.product_id !== productId),
++        };
++      }
++      // 否则更新数量
++      return {
++        cart: state.cart.map((item) =>
++          item.product_id === productId
++            ? { ...item, quantity }
++            : item
++        ),
++      };
++    });
++  },
++
+   clearCart: () => {
+     set({ cart: [] });
+   },
