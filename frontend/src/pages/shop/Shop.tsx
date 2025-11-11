@@ -9,7 +9,7 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [cartVisible, setCartVisible] = useState(false);
 
-  const { cart, addToCart, removeFromCart } = useCartStore();
+  const { cart, addToCart, removeFromCart, updateQuantity } = useCartStore();
 
   // 获取商品列表
   useEffect(() => {
@@ -39,6 +39,11 @@ const Shop = () => {
   // 移除购物车商品
   const handleRemoveFromCart = (productId: number) => {
     removeFromCart(productId);
+  };
+
+  // 更新购物车商品数量
+  const handleUpdateQuantity = (productId: number, quantity: number) => {
+    updateQuantity(productId, quantity);
   };
 
   return (
@@ -84,6 +89,7 @@ const Shop = () => {
         cart={cart}
         onCancel={() => setCartVisible(false)}
         onRemove={handleRemoveFromCart}
+        onUpdateQuantity={handleUpdateQuantity}
       />
     </div>
   );

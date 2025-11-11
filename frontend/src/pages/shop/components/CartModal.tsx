@@ -1,4 +1,4 @@
-import { Modal, Button, Space, Empty } from '@douyinfe/semi-ui';
+import { Modal, Button, Space, Empty, InputNumber } from '@douyinfe/semi-ui';
 import { useNavigate } from 'react-router-dom';
 import type {CartItem} from '../types';
 
@@ -7,9 +7,10 @@ interface CartModalProps {
   cart: CartItem[];
   onCancel: () => void;
   onRemove: (productId: number) => void;
+  onUpdateQuantity: (productId: number, quantity: number) => void;
 }
 
-const CartModal = ({ visible, cart, onCancel, onRemove }: CartModalProps) => {
+const CartModal = ({ visible, cart, onCancel, onRemove, onUpdateQuantity }: CartModalProps) => {
   const navigate = useNavigate();
 
   const totalPrice = cart.reduce(
@@ -47,16 +48,30 @@ const CartModal = ({ visible, cart, onCancel, onRemove }: CartModalProps) => {
                     {item.product_name}
                   </p>
                   <p className="text-xs text-red-600 font-semibold m-0">
-                    ¥{item.price} × {item.quantity}
+                    ¥{item.price}
                   </p>
                 </div>
-                <Button
-                  type="danger"
-                  size="small"
-                  onClick={() => onRemove(item.product_id)}
-                >
-                  移除
-                </Button>
+                <div className="flex items-center gap-2">
+                  <InputNumber
+                    value={item.quantity}
+                    min={1}
+                    max={999}
+                    step={1}
+                    size="small"
+                    className="w-24"
+                    onChange={(value) => {
+                      const newQuantity = typeof value === 'number' ? value : 1;
+                      onUpdateQuantity(item.product_id, newQuantity);
+                    }}
+                  />
+                  <Button
+                    type="danger"
+                    size="small"
+                    onClick={() => onRemove(item.product_id)}
+                  >
+                    移除
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

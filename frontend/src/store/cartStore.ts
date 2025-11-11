@@ -5,6 +5,7 @@ interface CartStore {
   cart: CartItem[];
   addToCart: (product: any) => void;
   removeFromCart: (productId: number) => void;
+  updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   getTotal: () => number;
 }
@@ -43,6 +44,25 @@ export const useCartStore = create<CartStore>((set, get) => ({
     set((state) => ({
       cart: state.cart.filter((item) => item.product_id !== productId),
     }));
+  },
+
+  updateQuantity: (productId, quantity) => {
+    set((state) => {
+      // 如果数量小于等于0，则移除该商品
+      if (quantity <= 0) {
+        return {
+          cart: state.cart.filter((item) => item.product_id !== productId),
+        };
+      }
+      // 否则更新数量
+      return {
+        cart: state.cart.map((item) =>
+          item.product_id === productId
+            ? { ...item, quantity }
+            : item
+        ),
+      };
+    });
   },
 
   clearCart: () => {
