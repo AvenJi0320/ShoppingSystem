@@ -25,6 +25,7 @@ model SysUser {
 
   @@map("sys_user")
   Order Order[]
+  ProductComment ProductComment[]
 }
 
 model Product {
@@ -40,6 +41,7 @@ model Product {
   updated_at    DateTime @updatedAt
 
   @@map("product")
+  ProductComment ProductComment[]
 }
 
 model Order {
@@ -54,4 +56,18 @@ model Order {
   user           SysUser  @relation(fields: [user_id], references: [user_id])
 
   @@map("order")
+}
+
+model ProductComment {
+  comment_id   Int      @id @default(autoincrement())
+  user_id      Int
+  product_id   Int
+  score        Int      // 评分：1-5分
+  content      String?
+  create_time  DateTime @default(now())
+
+  user         SysUser  @relation(fields: [user_id], references: [user_id])
+  product      Product  @relation(fields: [product_id], references: [product_id])
+
+  @@map("product_comment")
 }
