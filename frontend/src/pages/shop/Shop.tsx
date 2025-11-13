@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Button, Spin, Empty } from '@douyinfe/semi-ui';
-import { ProductCard, CartModal, TopNavBar } from './components';
+import { ProductCard, CartModal, TopNavBar, ProductFilter } from './components';
 import type {Product} from './types';
 import { useCartStore } from '../../store/cartStore';
 
 const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [cartVisible, setCartVisible] = useState(false);
+  const [filters, setFilters] = useState({ searchTerm: '', category: '' });
 
   const { cart, addToCart, removeFromCart, updateQuantity } = useCartStore();
 
@@ -15,6 +17,11 @@ const Shop = () => {
   useEffect(() => {
     void fetchProducts();
   }, []);
+
+  // 当过滤器改变时，重新过滤商品
+  useEffect(() => {
+    filterProducts();
+  }, [filters, products]);
 
   const fetchProducts = async () => {
     try {
@@ -29,6 +36,39 @@ const Shop = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 过滤商品函数
+  const filterProducts = () => {
+    let filtered = products;
+
+    // 按商品名称搜索
+    if (filters.searchTerm) {
+      filtered = filtered.filter(product => 
+        (product.product_name || '')
+          .toLowerCase()
+          .includes(filters.searchTerm.toLowerCase())
+      );
+    }
+
+    // 按商品类型过滤 - 使用category_id字段
+    if (filters.category) {
+      filtered = filtered.filter(product => 
+        product.category_id === parseInt(filters.category)
+      );
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  // 处理过滤器变化
+  const handleFilterChange = (newFilters: { searchTerm: string; category: string }) => {
+    setFilters(newFilters);
+  };
+
+  // 处理搜索
+  const handleSearch = (searchTerm: string, category: string) => {
+    setFilters({ searchTerm, category });
   };
 
   // 添加商品到购物车
@@ -62,17 +102,42 @@ const Shop = () => {
         </Button>
       </div>
 
+      {/* 商品过滤组件 */}
+      <div className="mx-5">
+        <ProductFilter 
+          onFilterChange={handleFilterChange}
+          onSearch={handleSearch}
+        />
+      </div>
+
       {/* 商品展示区域 */}
       <div className="w-full">
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <Spin />
           </div>
-        ) : products.length === 0 ? (
-          <Empty />
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-8">
+            <Empty 
+              description={
+                filters.searchTerm || filters.category 
+                  ? '没有找到符合条件的商品' 
+                  : '暂无商品'
+              }
+            />
+            {(filters.searchTerm || filters.category) && (
+              <Button 
+                type="secondary" 
+                onClick={() => handleSearch('', '')}
+                className="mt-4"
+              >
+                清除筛选条件
+              </Button>
+            )}
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <ProductCard
                 key={product.product_id}
                 product={product}
