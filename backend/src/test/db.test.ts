@@ -3,33 +3,33 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // Mock Prisma client
 const mockPrisma = {
   sysUser: {
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
+    findUnique: vi.fn<any>().mockResolvedValue(null),
+    findMany: vi.fn<any>().mockResolvedValue([]),
+    create: vi.fn<any>().mockResolvedValue({}),
+    update: vi.fn<any>().mockResolvedValue({}),
+    delete: vi.fn<any>().mockResolvedValue({}),
   },
   product: {
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
+    findMany: vi.fn<any>().mockResolvedValue([]),
+    findUnique: vi.fn<any>().mockResolvedValue(null),
+    create: vi.fn<any>().mockResolvedValue({}),
+    update: vi.fn<any>().mockResolvedValue({}),
   },
   order: {
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-    create: vi.fn(),
+    findMany: vi.fn<any>().mockResolvedValue([]),
+    findUnique: vi.fn<any>().mockResolvedValue(null),
+    create: vi.fn<any>().mockResolvedValue({}),
   },
   productComment: {
-    findMany: vi.fn(),
-    create: vi.fn(),
+    findMany: vi.fn<any>().mockResolvedValue([]),
+    create: vi.fn<any>().mockResolvedValue({}),
   },
-  $connect: vi.fn(),
-  $disconnect: vi.fn(),
+  $connect: vi.fn<any>().mockResolvedValue(undefined),
+  $disconnect: vi.fn<any>().mockResolvedValue(undefined),
 }
 
-vi.mock('./generated/prisma/client.js', () => ({
-  PrismaClient: vi.fn(() => mockPrisma),
+vi.mock('../generated/prisma/client.js', () => ({
+  PrismaClient: vi.fn(function() { return mockPrisma }),
 }))
 
 describe('Database Operations', () => {
@@ -49,7 +49,7 @@ describe('Database Operations', () => {
 
       mockPrisma.sysUser.findUnique.mockResolvedValue(mockUser)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const user = await prisma.sysUser.findUnique({
@@ -65,7 +65,7 @@ describe('Database Operations', () => {
     it('should return null for non-existent user', async () => {
       mockPrisma.sysUser.findUnique.mockResolvedValue(null)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const user = await prisma.sysUser.findUnique({
@@ -97,7 +97,7 @@ describe('Database Operations', () => {
 
       mockPrisma.product.findMany.mockResolvedValue(mockProducts)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const products = await prisma.product.findMany()
@@ -119,7 +119,7 @@ describe('Database Operations', () => {
 
       mockPrisma.product.findMany.mockResolvedValue(mockProducts)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const products = await prisma.product.findMany({
@@ -156,7 +156,7 @@ describe('Database Operations', () => {
 
       mockPrisma.order.create.mockResolvedValue(mockOrder)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const order = await prisma.order.create({
@@ -185,7 +185,7 @@ describe('Database Operations', () => {
 
       mockPrisma.order.findMany.mockResolvedValue(mockOrders)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const orders = await prisma.order.findMany({
@@ -218,7 +218,7 @@ describe('Database Operations', () => {
 
       mockPrisma.productComment.create.mockResolvedValue(mockComment)
 
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       const comment = await prisma.productComment.create({
@@ -235,7 +235,7 @@ describe('Database Operations', () => {
 
   describe('Connection management', () => {
     it('should connect to database', async () => {
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       await prisma.$connect()
@@ -244,7 +244,7 @@ describe('Database Operations', () => {
     })
 
     it('should disconnect from database', async () => {
-      const { PrismaClient } = await import('./generated/prisma/client.js')
+      const { PrismaClient } = await import('../generated/prisma/client.js')
       const prisma = new PrismaClient()
 
       await prisma.$disconnect()
