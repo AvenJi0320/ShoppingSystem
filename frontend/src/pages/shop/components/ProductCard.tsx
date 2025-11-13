@@ -1,4 +1,7 @@
 import { Card, Button } from '@douyinfe/semi-ui';
+import { IconComment } from '@douyinfe/semi-icons';
+import { useState } from 'react';
+import ProductCommentModal from './ProductCommentModal';
 import type { Product } from '../types';
 
 interface ProductCardProps {
@@ -7,8 +10,19 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
+  const [commentModalVisible, setCommentModalVisible] = useState(false);
+
+  const handleCommentClick = () => {
+    setCommentModalVisible(true);
+  };
+
+  const handleCommentModalClose = () => {
+    setCommentModalVisible(false);
+  };
+
   return (
-    <Card
+    <>
+      <Card
       key={product.product_id}
       title={product.product_name}
       cover={
@@ -34,17 +48,31 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
             <p className="text-xs text-gray-400 m-0">库存: {product.stock}</p>
           </div>
         </div>
-        <Button
-          block
-          type="primary"
-          onClick={() => onAddToCart(product)}
-          disabled={product.stock === 0}
-          className="mt-4"
-        >
-          {product.stock === 0 ? '缺货' : '加入购物车'}
-        </Button>
+        <div className="flex gap-2 mt-4">
+          <Button
+            type="secondary"
+            icon={<IconComment />}
+            onClick={handleCommentClick}
+            className="flex-1"
+          />
+          <Button
+            block
+            type="primary"
+            onClick={() => onAddToCart(product)}
+            disabled={product.stock === 0}
+            className="flex-1"
+          >
+            {product.stock === 0 ? '缺货' : '加入购物车'}
+          </Button>
+        </div>
       </div>
     </Card>
+    <ProductCommentModal
+      visible={commentModalVisible}
+      onClose={handleCommentModalClose}
+      productId={product.product_id}
+    />
+    </>
   );
 };
 
