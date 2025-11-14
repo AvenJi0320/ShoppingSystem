@@ -1,7 +1,12 @@
 import prisma from './client.js';
 
 async function main() {
-  // 清空现有数据
+  // 清空现有数据（按照依赖关系逆序删除）
+  await prisma.productComment.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.promotionRule.deleteMany();
+  await prisma.promotion.deleteMany();
+  await prisma.product.deleteMany();
   await prisma.sysUser.deleteMany();
 
   // 创建测试用户数据
@@ -41,7 +46,18 @@ async function main() {
     },
   });
 
-  console.log('创建的用户数据:', { user1, user2, user3, user4 });
+  // 创建管理员用户
+  const adminUser = await prisma.sysUser.create({
+    data: {
+      phone: '18888888888',
+      email: 'admin@example.com',
+      password: 'admin123', // 注意：实际项目中应该加密密码
+      role: 1, // 管理员
+      receive_address: '管理员办公室',
+    },
+  });
+
+  console.log('创建的管理员用户:', adminUser);
 
   // 清空现有商品数据
   await prisma.product.deleteMany();

@@ -5,6 +5,7 @@ import { userRoutes } from './routes/users.js';
 import { productRoutes } from './routes/products.js';
 import { orderRoutes } from './routes/orders.js';
 import { commentRoutes } from './routes/comment.js';
+import { promotionRoutes } from './routes/promotions.js';
 
 const app = new Elysia()
   .use(cors({
@@ -18,6 +19,7 @@ const app = new Elysia()
   .use(productRoutes)
   .use(orderRoutes)
   .use(commentRoutes)
+  .use(promotionRoutes)
   .listen(3000);
 
 console.log(`🚀 Server running at http://localhost:3000`);

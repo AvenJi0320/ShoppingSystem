@@ -20,12 +20,14 @@ model SysUser {
   email           String? @unique
   password        String
   receive_address String?
+  role            Int     @default(0) // 0-普通用户, 1-管理员
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   @@map("sys_user")
   Order Order[]
   ProductComment ProductComment[]
+  Promotion Promotion[]
 }
 
 model Product {
@@ -42,6 +44,7 @@ model Product {
 
   @@map("product")
   ProductComment ProductComment[]
+  PromotionRule PromotionRule[]
 }
 
 model Order {
@@ -50,10 +53,13 @@ model Order {
   total_amount   Float
   product_list   String   // 存储product_id列表，以逗号分隔，如 "1,2,3"
   order_status   Int      @default(0) // 0-待收货, 1-已完成, 2-已取消
+  promotion_id   Int?     // 使用的促销活动ID
+  discount_amount Float   @default(0) // 优惠金额
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
   user           SysUser  @relation(fields: [user_id], references: [user_id])
+  promotion      Promotion? @relation(fields: [promotion_id], references: [promotion_id])
 
   @@map("order")
 }
@@ -70,4 +76,40 @@ model ProductComment {
   product      Product  @relation(fields: [product_id], references: [product_id])
 
   @@map("product_comment")
+}
+
+model Promotion {
+  promotion_id   Int      @id @default(autoincrement())
+  title          String   // 促销活动标题
+  description    String?  // 活动描述
+  type           Int      // 1-满减, 2-折扣, 3-赠品, 4-限时折扣
+  status         Int      @default(1) // 0-未开始, 1-进行中, 2-已结束
+  start_time     DateTime
+  end_time       DateTime
+  created_by     Int      // 创建者用户ID
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  creator        SysUser  @relation(fields: [created_by], references: [user_id])
+  rules          PromotionRule[]
+  orders         Order[]
+
+  @@map("promotion")
+}
+
+model PromotionRule {
+  rule_id       Int     @id @default(autoincrement())
+  promotion_id  Int
+  product_id    Int?    // 针对特定商品，为空则为全场
+  condition_type Int    // 1-满金额, 2-满数量
+  condition_value Float // 条件值（如满100元）
+  discount_type  Int    // 1-减金额, 2-打折, 3-赠品
+  discount_value Float  // 优惠值（如减20元，打8折）
+  gift_product_id Int?  // 赠品商品ID（当discount_type=3时使用）
+  created_at    DateTime @default(now())
+
+  promotion     Promotion @relation(fields: [promotion_id], references: [promotion_id])
+  product       Product?  @relation(fields: [product_id], references: [product_id])
+
+  @@map("promotion_rule")
 }

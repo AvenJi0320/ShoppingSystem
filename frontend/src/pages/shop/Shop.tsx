@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ProductCard, CartModal, ProductFilter } from './components';
 import type {Product} from './types';
 import { useCartStore } from '../../store/cartStore';
+import { useUserStore } from '../../store/userStore';
 
 const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -14,6 +15,7 @@ const Shop = () => {
   const navigate = useNavigate();
 
   const { cart, addToCart, removeFromCart, updateQuantity } = useCartStore();
+  const { role, clearUser } = useUserStore();
 
   // 获取商品列表
   useEffect(() => {
@@ -95,6 +97,14 @@ const Shop = () => {
       <div className="flex justify-between items-center mb-8 bg-white p-5 rounded-lg shadow-sm m-5">
         <h1 className="text-3xl font-bold text-gray-900 m-0">商品列表</h1>
         <div className="flex gap-3">
+          {role === 1 && (
+            <Button
+              type="warning"
+              onClick={() => navigate('/admin')}
+            >
+              管理员面板
+            </Button>
+          )}
           <Button
             onClick={() => navigate('/order')}
           >
@@ -105,6 +115,15 @@ const Shop = () => {
             onClick={() => setCartVisible(true)}
           >
             购物车 ({cart.length})
+          </Button>
+          <Button
+            type="danger"
+            onClick={() => {
+              clearUser();
+              navigate('/login');
+            }}
+          >
+            退出登录
           </Button>
         </div>
       </div>

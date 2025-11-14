@@ -4,6 +4,7 @@ import Shop from "./pages/shop/Shop.tsx";
 import Login from "./pages/login/Login.tsx";
 import FinishCart from "./pages/cart/FinishCart.tsx";
 import Order from "./pages/order/Order.tsx";
+import AdminPanel from "./pages/admin/AdminPanel.tsx";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                 <Route path='/login' element={<Login />} />
                 <Route path='/finish_cart' element={<FinishCart />} />
                 <Route path='/order' element={<Order />} />
+                <Route path='/admin' element={<AdminPanel />} />
             </Routes>
         </Router>
     )

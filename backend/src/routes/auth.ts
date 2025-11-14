@@ -138,7 +138,8 @@ export const authRoutes = new Elysia({ prefix: '/api/auth' })
         data: {
           user_id: user.user_id,
           phone: user.phone,
-          email: user.email
+          email: user.email,
+          role: user.role
         },
         timestamp: new Date().toISOString()
       };

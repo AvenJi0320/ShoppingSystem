@@ -113,7 +113,7 @@ const Login = () => {
 
         if (result.success) {
           // 保存用户信息到store
-          setUser(result.data.user_id, result.data.phone, result.data.email);
+          setUser(result.data.user_id, result.data.phone, result.data.email, result.data.role);
           Toast.success('登录成功');
           navigate('/shop');
         } else {
