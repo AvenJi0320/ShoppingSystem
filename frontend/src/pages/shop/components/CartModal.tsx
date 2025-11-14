@@ -21,7 +21,7 @@ const CartModal = ({ visible, cart, onCancel, onRemove, onUpdateQuantity }: Cart
   const handleCheckout = () => {
     if (cart.length > 0) {
       onCancel();
-      navigate('/finish_order');
+      navigate('/finish_cart');
     }
   };
 
