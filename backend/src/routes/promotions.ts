@@ -2,6 +2,41 @@ import { Elysia } from 'elysia';
 import prisma from '../db/client.js';
 
 export const promotionRoutes = new Elysia({ prefix: '/api/promotions' })
+  // 获取当前可用的促销活动
+  .get('/available', async () => {
+    try {
+      const now = new Date();
+
+      const promotions = await prisma.promotion.findMany({
+        where: {
+          status: 1, // 进行中的活动
+          start_time: { lte: now },
+          end_time: { gte: now }
+        },
+        include: {
+          rules: {
+            include: {
+              product: true
+            }
+          }
+        },
+        orderBy: { created_at: 'desc' }
+      });
+
+      return {
+        success: true,
+        data: promotions,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: '获取可用促销活动失败',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      };
+    }
+  })
   // 获取所有促销活动
   .get('/', async ({ query }) => {
     try {

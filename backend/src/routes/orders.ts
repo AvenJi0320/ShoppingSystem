@@ -63,10 +63,12 @@ export const orderRoutes = new Elysia({ prefix: '/api/order/user' })
   })
   .post('/create', async ({ body }) => {
     try {
-      const { user_id, total_amount, product_list } = body as {
+      const { user_id, total_amount, product_list, promotion_id, discount_amount } = body as {
         user_id: number;
         total_amount: number;
         product_list: number[];
+        promotion_id?: number;
+        discount_amount?: number;
       };
 
       // 验证必要参数
@@ -119,6 +121,39 @@ export const orderRoutes = new Elysia({ prefix: '/api/order/user' })
         }
       }
 
+      // 验证促销活动（如果提供了promotion_id）
+      if (promotion_id) {
+        const promotion = await prisma.promotion.findUnique({
+          where: { promotion_id: promotion_id },
+          include: { rules: true }
+        });
+
+        if (!promotion) {
+          return {
+            success: false,
+            message: '促销活动不存在',
+            timestamp: new Date().toISOString()
+          };
+        }
+
+        if (promotion.status !== 1) {
+          return {
+            success: false,
+            message: '促销活动未在进行中',
+            timestamp: new Date().toISOString()
+          };
+        }
+
+        const now = new Date();
+        if (now < promotion.start_time || now > promotion.end_time) {
+          return {
+            success: false,
+            message: '促销活动不在有效期内',
+            timestamp: new Date().toISOString()
+          };
+        }
+      }
+
       // 将商品ID数组转换为字符串
       const productListStr = product_list.join(',');
 
@@ -128,7 +163,9 @@ export const orderRoutes = new Elysia({ prefix: '/api/order/user' })
           user_id: user_id,
           total_amount: total_amount,
           product_list: productListStr,
-          order_status: 0 // 默认状态：待收货
+          order_status: 0, // 默认状态：待收货
+          promotion_id: promotion_id || null,
+          discount_amount: discount_amount || 0
         }
       });
 
@@ -151,6 +188,8 @@ export const orderRoutes = new Elysia({ prefix: '/api/order/user' })
           total_amount: order.total_amount,
           product_list: order.product_list,
           order_status: order.order_status,
+          promotion_id: order.promotion_id,
+          discount_amount: order.discount_amount,
           created_at: order.created_at
         },
         timestamp: new Date().toISOString()

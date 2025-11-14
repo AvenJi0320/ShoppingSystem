@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Select, Toast, Space, Tag, Card } from '@douyinfe/semi-ui';
 import { IconPlus, IconEdit, IconDelete, IconPlay, IconPause } from '@douyinfe/semi-icons';
+import { useUserStore } from '../../store/userStore';
 
 interface Promotion {
   promotion_id: number;
@@ -43,6 +44,8 @@ const PromotionManagement = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [rules, setRules] = useState<PromotionRule[]>([]);
+
+  const { user_id } = useUserStore();
 
   const typeOptions = [
     { label: '满减', value: 1 },
@@ -153,10 +156,38 @@ const PromotionManagement = () => {
 
   const handleSubmit = async (values: any) => {
     try {
+      // 格式化时间为ISO字符串
+      const formatDateTime = (dateTime: any) => {
+        if (!dateTime) return null;
+        if (typeof dateTime === 'string') return dateTime;
+        if (dateTime instanceof Date) return dateTime.toISOString();
+        // 处理Semi UI DatePicker返回的对象
+        if (dateTime && typeof dateTime === 'object' && dateTime.value) {
+          return new Date(dateTime.value).toISOString();
+        }
+        return new Date(dateTime).toISOString();
+      };
+
+      // 清理rules数据，只保留需要的字段
+      const cleanRules = rules
+        .filter(rule => rule.condition_value > 0 && rule.discount_value > 0)
+        .map(rule => ({
+          product_id: rule.product_id || null,
+          condition_type: rule.condition_type,
+          condition_value: rule.condition_value,
+          discount_type: rule.discount_type,
+          discount_value: rule.discount_value,
+          gift_product_id: rule.gift_product_id || null
+        }));
+
       const promotionData = {
-        ...values,
-        created_by: 1, // 暂时使用管理员ID 1
-        rules: rules.filter(rule => rule.condition_value > 0 && rule.discount_value > 0)
+        title: values.title,
+        description: values.description,
+        type: values.type,
+        start_time: formatDateTime(values.start_time),
+        end_time: formatDateTime(values.end_time),
+        created_by: user_id,
+        rules: cleanRules
       };
 
       const url = editingPromotion
@@ -173,12 +204,13 @@ const PromotionManagement = () => {
       });
 
       const result = await response.json();
+
       if (result.success) {
         Toast.success(editingPromotion ? '促销活动更新成功' : '促销活动创建成功');
         setModalVisible(false);
         fetchPromotions();
       } else {
-        Toast.error(result.message);
+        Toast.error(result.message || '操作失败');
       }
     } catch (error) {
       Toast.error(editingPromotion ? '更新促销活动失败' : '创建促销活动失败');
@@ -354,6 +386,7 @@ const PromotionManagement = () => {
               field="start_time"
               label="开始时间"
               type="dateTime"
+              format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择开始时间"
               rules={[{ required: true, message: '请选择开始时间' }]}
               style={{ flex: 1 }}
@@ -362,6 +395,7 @@ const PromotionManagement = () => {
               field="end_time"
               label="结束时间"
               type="dateTime"
+              format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择结束时间"
               rules={[{ required: true, message: '请选择结束时间' }]}
               style={{ flex: 1 }}
